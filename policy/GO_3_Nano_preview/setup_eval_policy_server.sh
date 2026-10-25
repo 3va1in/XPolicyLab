@@ -1,5 +1,12 @@
 #!/bin/bash
 set -euo pipefail
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+POLICY_DIR="$SCRIPT_DIR"
+source "$POLICY_DIR/configs/runtime.conf"
+if (( $# < 9 || $# > 10 )); then
+    echo 'Usage: setup_eval_policy_server.sh <bench> <task> <ckpt> <profile> <action> <seed> <gpu> <policy_env> <port> [host]' >&2
+    exit 2
+fi
 
 bench_name=${1}
 task_name=${2}
@@ -12,8 +19,6 @@ policy_conda_env=${8}
 policy_server_port=${9}
 policy_server_host=${10:-"localhost"}
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-XPL_ROOT="${XPL_ROOT:-$(cd "${SCRIPT_DIR}/../.." && pwd)}"
 UTILS_DIR="${XPL_ROOT}/utils"
 
 policy_name="$(basename "${SCRIPT_DIR}")"
@@ -21,8 +26,6 @@ yaml_file="${SCRIPT_DIR}/deploy.yml"
 
 echo "[SERVER] policy=${policy_name}, task=${task_name}, policy_server_port=${policy_server_port}"
 
-runtime_config="${ROBOTWIN_RUNTIME_CONFIG:-${XDG_CONFIG_HOME:-$HOME/.config}/robotwin/runtime_paths.sh}"
-if [[ -f "$runtime_config" ]]; then source "$runtime_config"; fi
 if [[ -x "${policy_conda_env}/bin/python" ]]; then
     policy_python="${policy_conda_env}/bin/python"
 else

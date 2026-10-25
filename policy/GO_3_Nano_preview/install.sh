@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 root="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-python_bin="${PYTHON_BIN:-python3}"
+POLICY_DIR="$root"
+source "$POLICY_DIR/configs/runtime.conf"
+python_bin="${PYTHON_BIN:-${POLICY_PYTHON:-python3}}"
 mode="${1:-train}"
 case "$mode" in
   infer) requirements="$root/go3_nano_preview/requirements-infer.txt" ;;

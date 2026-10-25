@@ -11,7 +11,7 @@ def robotwin_stats_path() -> str:
 def path_from_env(name: str, *, required: bool = True) -> str:
     value = os.environ.get(name, '').strip()
     if required and not value:
-        raise ValueError(f'Set {name} in the private runtime configuration script')
+        raise ValueError(f'Set {name} in configs/runtime.conf')
     return value
 
 

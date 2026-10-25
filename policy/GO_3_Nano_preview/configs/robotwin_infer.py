@@ -1,7 +1,7 @@
 """Robotwin WAM_policy inference configuration.
 
-The server loads this module after applying the private runtime configuration.
-Use start_model_server.sh at the repository root; paths come from environment variables.
+The evaluation server loads this module after configs/runtime.conf.
+Use eval.sh or setup_eval_policy_server.sh; paths come from environment variables.
 """
 from __future__ import annotations
 from go3_nano_preview.runtime_paths import path_from_env, paths_from_env, robotwin_stats_path

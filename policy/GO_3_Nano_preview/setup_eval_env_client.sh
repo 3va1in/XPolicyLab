@@ -1,9 +1,14 @@
 #!/usr/bin/env bash
 set -euo pipefail
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+POLICY_DIR="$SCRIPT_DIR"
+source "$POLICY_DIR/configs/runtime.conf"
+if (( $# < 10 || $# > 11 )); then
+  echo 'Usage: setup_eval_env_client.sh <bench> <task> <ckpt> <profile> <action> <seed> <gpu> <eval_env> <additional_info> <port> [host]' >&2
+  exit 2
+fi
 bench_name=${1}; task_name=${2}; ckpt_name=${3}; env_cfg_type=${4}; action_type=${5}
 seed=${6}; env_gpu_id=${7}; eval_env=${8}; additional_info=${9}; port=${10}; host=${11:-localhost}
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-XPL_ROOT="${XPL_ROOT:-$(cd "${SCRIPT_DIR}/../.." && pwd)}"
 BENCH_ROOT="$(cd "${XPL_ROOT}/.." && pwd)"
 if [[ -x "${eval_env}/bin/python" ]]; then
   export PATH="${eval_env}/bin:$PATH"
