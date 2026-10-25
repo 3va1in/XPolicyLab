@@ -3,7 +3,6 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 POLICY_DIR="$SCRIPT_DIR"
-source "$POLICY_DIR/configs/runtime.conf"
 usage() {
     echo 'Usage: eval.sh [--dry-run]'
     echo '   or: eval.sh <bench_name> <task_name> <ckpt_name> <env_cfg_type> <action_type> <seed> <policy_gpu_id> <env_gpu_id> <policy_env> <eval_env> [--dry-run]'
@@ -19,6 +18,7 @@ for argument in "$@"; do
     esac
 done
 set -- "${args[@]}"
+source "$POLICY_DIR/configs/runtime.conf"
 if (( $# == 0 )); then
     bench_name="$EVAL_BENCH"; task_name="$EVAL_TASK"; ckpt_name="$CKPT_PATH"
     env_cfg_type="$EVAL_ENV_CFG_TYPE"; action_type="$EVAL_ACTION_TYPE"; seed="$EVAL_SEED"

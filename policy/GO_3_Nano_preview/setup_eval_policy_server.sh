@@ -2,11 +2,13 @@
 set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 POLICY_DIR="$SCRIPT_DIR"
-source "$POLICY_DIR/configs/runtime.conf"
+usage() { echo 'Usage: setup_eval_policy_server.sh <bench> <task> <ckpt> <profile> <action> <seed> <gpu> <policy_env> <port> [host]'; }
+if [[ "${1:-}" == --help || "${1:-}" == -h ]]; then usage; exit 0; fi
 if (( $# < 9 || $# > 10 )); then
-    echo 'Usage: setup_eval_policy_server.sh <bench> <task> <ckpt> <profile> <action> <seed> <gpu> <policy_env> <port> [host]' >&2
+    usage >&2
     exit 2
 fi
+source "$POLICY_DIR/configs/runtime.conf"
 
 bench_name=${1}
 task_name=${2}
@@ -33,12 +35,9 @@ else
     conda activate "${policy_conda_env}"
     policy_python="$(command -v python)"
 fi
-export PYTHONPATH="${XPL_ROOT}/..:${SCRIPT_DIR}:${SCRIPT_DIR}/go3_nano_preview${PYTHONPATH:+:${PYTHONPATH}}"
-export PYTHONDONTWRITEBYTECODE=1
-export STAT_PATH="${SCRIPT_DIR}/assets/stats/robotwin.json"
+source "$POLICY_DIR/tools/policy_env.sh"
+go3_policy_environment
 export WAM_policy_INFER_LEGACY_STATE_LAYOUT=identity
-export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
-export OMP_NUM_THREADS=2 TOKENIZERS_PARALLELISM=false
 
 
 exec env \

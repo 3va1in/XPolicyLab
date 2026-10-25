@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import contextlib
+import hashlib
 import importlib.util
 import json
 import os
@@ -96,6 +97,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--config', required=True)
     parser.add_argument('--output', required=True)
+    parser.add_argument('--checkpoint-link', help='Publish each complete inference checkpoint at this path')
     parser.add_argument('--steps', type=int, help='Final global step; defaults to config train_steps')
     parser.add_argument('--batch-size', type=int)
     parser.add_argument('--workers', type=int)
@@ -228,6 +230,7 @@ def main():
     def save_run_settings():
         # Paths remain in external runtime files; record only effective non-path overrides.
         (output/'run_settings.json').write_text(json.dumps(dict(batch_size=batch_size,world_size=world,
+            config_name=Path(args.config).name,config_sha256=hashlib.sha256(Path(args.config).read_bytes()).hexdigest(),
             objectives=list(combined.order), weights=combined.weights, gradient_accumulation_steps=combined.grad_accum,
             seed=args.seed,skip_validation=args.skip_validation,skip_save=args.skip_save,
             initial_global_step=initial_step,start_global_step=start,final_global_step=args.steps,
@@ -271,7 +274,7 @@ def main():
             log.write(json.dumps(record)+'\n');log.flush()
             if rank==0: print(json.dumps(record),flush=True)
             if not args.skip_save and (index % save_every == 0 or index == args.steps):
-                on_rank_zero(lambda: save_checkpoint(model,output,index), control_group)
+                on_rank_zero(lambda: save_checkpoint(model,output,index,args.checkpoint_link), control_group)
                 engine.save_checkpoint(str(output/'training_state'),tag=f'step_{index}',client_state={'step':index})
             if index % cfg.validation.steps_to_val == 0:
                 on_rank_zero(lambda: run_validation(model,validator,index,output), control_group)

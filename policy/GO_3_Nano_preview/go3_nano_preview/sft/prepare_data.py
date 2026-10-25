@@ -3,11 +3,14 @@ import argparse
 from collections import Counter
 import hashlib
 import json
+import os
 from pathlib import Path
 
 import av
 import numpy as np
 import torch
+
+from go3_nano_preview.sft.paths import POLICY_ROOT, add_standard_arguments, standard_name, check_link, publish_link
 
 
 def validate_record(record, root):
@@ -53,12 +56,20 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--jsonl', required=True)
     parser.add_argument('--data-root', required=True)
-    parser.add_argument('--output', required=True)
+    parser.add_argument('--output')
     parser.add_argument('--expected-episodes', type=int)
+    add_standard_arguments(parser)
     args = parser.parse_args()
     source = Path(args.jsonl).resolve()
     root = Path(args.data_root).resolve()
-    output = Path(args.output).resolve()
+    name = standard_name(args, include_seed=False)
+    if not args.output and not name:
+        parser.error('Set SFT_PREPARED_DIR or supply the four standard arguments')
+    run_root = Path(os.environ.get('RUN_ROOT') or str(Path.home() / 'robotwin-runs')).expanduser()
+    output = Path(args.output).expanduser().resolve() if args.output else (run_root / 'data' / name).resolve()
+    link = POLICY_ROOT / 'data' / name if name else None
+    if link is not None:
+        check_link(link, output)
     checkout = Path(__file__).resolve().parents[2]
     if output.is_relative_to(checkout):
         raise ValueError('Prepared data must be outside the policy checkout')
@@ -85,11 +96,13 @@ def main():
         raise ValueError('Empty dataset')
     output.mkdir(parents=True)
     (output/'train.jsonl').write_bytes(content)
-    report = dict(episodes=len(records), tasks=dict(sorted(tasks.items())),
+    report = dict(episodes=len(records), tasks=dict(sorted(tasks.items())), data_root=str(root),
                   jsonl_sha256=hashlib.sha256(content).hexdigest(),
                   validation='all actions finite; each camera first frame and declared frame count checked',
                   leaderboard_count_match=len(tasks)==50 and all(n==50 for n in tasks.values()))
     (output/'validation.json').write_text(json.dumps(report, indent=2)+'\n')
+    if link is not None:
+        publish_link(link, output)
     print(json.dumps(report), flush=True)
 
 

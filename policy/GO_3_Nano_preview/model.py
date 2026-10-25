@@ -11,7 +11,7 @@ import numpy as np
 
 from XPolicyLab.model_template import ModelTemplate
 from XPolicyLab.utils.process_data import get_robot_action_dim_info
-from XPolicyLab.utils.checkpoint_resolver import resolve_checkpoint_root, ckpt_name_is_path
+from XPolicyLab.utils.checkpoint_resolver import resolve_checkpoint_root
 
 POLICY_ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(POLICY_ROOT))
@@ -37,10 +37,7 @@ class Model(ModelTemplate):
         self.steps = int(model_cfg['num_ae_steps'])
         if self.horizon < 1 or self.steps < 1:
             raise ValueError('action_horizon and num_ae_steps must be positive')
-        checkpoint_cfg = dict(model_cfg)
-        if not ckpt_name_is_path(model_cfg['ckpt_name']) and os.environ.get('CKPT_PATH'):
-            checkpoint_cfg.setdefault('checkpoint_path',os.environ['CKPT_PATH'])
-        checkpoint = str(resolve_checkpoint_root(checkpoint_cfg,
+        checkpoint = str(resolve_checkpoint_root(model_cfg,
             POLICY_ROOT/'checkpoints',policy_dir=POLICY_ROOT))
         # import_module supports the retained hyphenated service filename.
         service = import_module('go3_nano_preview.serve_GO-3')

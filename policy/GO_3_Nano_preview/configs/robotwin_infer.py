@@ -4,14 +4,14 @@ The evaluation server loads this module after configs/runtime.conf.
 Use eval.sh or setup_eval_policy_server.sh; paths come from environment variables.
 """
 from __future__ import annotations
-from go3_nano_preview.runtime_paths import path_from_env, paths_from_env, robotwin_stats_path
+from go3_nano_preview.runtime_paths import path_from_env, paths_from_env, robotwin_stats_path, inference_weight_path
 from collections.abc import Callable
 from policy_core.settings import settings
 from policy_core.utils.WAM_policy.WAM_policy_config import WAM_policyConfig
 
 class VideoModelConfig:
     """VGen transformer weights + constructor kwargs (``cfg.model.video.*``)."""
-    path: str = path_from_env('VIDEO_PRETRAIN_PATH')
+    path: str = inference_weight_path('VIDEO_PRETRAIN_PATH', settings.infer_checkpoint_dir, 'diffusion_pytorch_model.bin')
     activation_fn: str = 'gelu-approximate'
     attention_bias: bool = True
     attention_head_dim: int = 64
@@ -45,7 +45,7 @@ class VideoModelConfig:
 
 class ActionModelConfig:
     """Action-expert weights + constructor kwargs (``cfg.model.action.*``)."""
-    path: str = path_from_env('ACTION_PRETRAIN_PATH')
+    path: str = inference_weight_path('ACTION_PRETRAIN_PATH', settings.infer_checkpoint_dir, 'action_model/diffusion_pytorch_model.bin')
     num_layers: int = 28
     attention_bias: bool = True
     norm_elementwise_affine: bool = False
