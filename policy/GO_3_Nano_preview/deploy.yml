@@ -1,4 +1,4 @@
-policy_name: GO-3_Nano_preview
+policy_name: GO_3_Nano_preview
 protocol: ws
 host: localhost
 port: null

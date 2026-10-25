@@ -16,7 +16,7 @@ class PortableLayoutTests(unittest.TestCase):
         cls.temp = tempfile.TemporaryDirectory(prefix='wam-layout-')
         cls.addClassCleanup(cls.temp.cleanup)
         cls.root = Path(cls.temp.name)
-        cls.policy = cls.root / 'XPolicyLab workspace' / 'policy' / 'GO-3_Nano_preview'
+        cls.policy = cls.root / 'XPolicyLab workspace' / 'policy' / 'GO_3_Nano_preview'
         shutil.copytree(Path(__file__).resolve().parents[1], cls.policy,
                         ignore=shutil.ignore_patterns('__pycache__', '*.pyc'))
         cls.caller = cls.root / 'caller'

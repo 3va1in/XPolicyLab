@@ -1,15 +1,15 @@
 # GO-3 Nano Preview
 
-Python source code is stored directly in `policy/GO-3_Nano_preview/go3_nano_preview/`, which is also the `go3_nano_preview` import package; no separate forwarding package is needed. The standalone server file remains `serve_GO-3.py`, and the XPolicyLab `policy_name` is `GO-3_Nano_preview`. The model's internal `policy_core.*.WAM_policy` class names, subdirectories, and configuration variables retain their original meanings.
+Python source code is stored directly in `policy/GO_3_Nano_preview/go3_nano_preview/`, which is also the `go3_nano_preview` import package; no separate forwarding package is needed. The standalone server file remains `serve_GO-3.py`, and the XPolicyLab `policy_name` is `GO_3_Nano_preview`. The model's internal `policy_core.*.WAM_policy` class names, subdirectories, and configuration variables retain their original meanings.
 
 See [RENAME_VALIDATION.md](RENAME_VALIDATION.md) for runtime validation after the rename, the locations of changes, and the latest logs.
 
-Model inference and supervised fine-tuning (SFT) code for RoboTwin, including a standalone WebSocket inference server, an XPolicyLab adapter, and training entry points for multiple GPUs on a single machine and multiple nodes managed by a platform. When submitting to XPolicyLab, only the complete `policy/GO-3_Nano_preview/` directory needs to be included; weights, training data, and machine-specific path configuration are prepared separately.
+Model inference and supervised fine-tuning (SFT) code for RoboTwin, including a standalone WebSocket inference server, an XPolicyLab adapter, and training entry points for multiple GPUs on a single machine and multiple nodes managed by a platform. When submitting to XPolicyLab, only the complete `policy/GO_3_Nano_preview/` directory needs to be included; weights, training data, and machine-specific path configuration are prepared separately.
 
-The commands below assume they are run from the **XPolicyLab root directory**. A standalone copy of the code uses the same `policy/GO-3_Nano_preview/` layout and supports installing dependencies, launching the standalone inference server, and training directly; simulation evaluation requires the complete XPolicyLab/RoboTwin environment.
+The commands below assume they are run from the **XPolicyLab root directory**. A standalone copy of the code uses the same `policy/GO_3_Nano_preview/` layout and supports installing dependencies, launching the standalone inference server, and training directly; simulation evaluation requires the complete XPolicyLab/RoboTwin environment.
 
 ```text
-policy/GO-3_Nano_preview/
+policy/GO_3_Nano_preview/
 ├── README.md                     # Installation, inference, and fine-tuning instructions
 ├── model.py / deploy.py          # XPolicyLab model and evaluation interfaces
 ├── deploy.yml                   # XPolicyLab policy configuration
@@ -41,10 +41,10 @@ export PYTHON_BIN="$HOME/.venvs/WAM_policy/bin/python"
 "$PYTHON_BIN" -m pip install --upgrade pip
 
 # Install the inference environment
-bash policy/GO-3_Nano_preview/install.sh infer
+bash policy/GO_3_Nano_preview/install.sh infer
 
 # If training is required, the installation command below is sufficient
-# bash policy/GO-3_Nano_preview/install.sh train
+# bash policy/GO_3_Nano_preview/install.sh train
 
 ```
 
@@ -58,7 +58,7 @@ Write the environment, weight, data, and output paths to a shell file outside th
 ```bash
 mkdir -p "$HOME/.config/robotwin"
 # Copy for initial setup; edit an existing configuration directly, preserving its contents
-cp -n policy/GO-3_Nano_preview/runtime_paths.example.sh \
+cp -n policy/GO_3_Nano_preview/runtime_paths.example.sh \
   "$HOME/.config/robotwin/runtime_paths.sh"
 
 export ROBOTWIN_RUNTIME_CONFIG="$HOME/.config/robotwin/runtime_paths.sh"
@@ -129,19 +129,19 @@ Models are loaded offline at runtime, so all assets must be prepared in advance.
 
 ```bash
 # Check the configuration and asset files
-bash policy/GO-3_Nano_preview/start_model_server.sh check
+bash policy/GO_3_Nano_preview/start_model_server.sh check
 
 # Start in the background and wait for the health check to pass
-bash policy/GO-3_Nano_preview/start_model_server.sh start
+bash policy/GO_3_Nano_preview/start_model_server.sh start
 
 # Check the process and server readiness
-bash policy/GO-3_Nano_preview/start_model_server.sh status
+bash policy/GO_3_Nano_preview/start_model_server.sh status
 
 # Stop the server managed by this launch script
-bash policy/GO-3_Nano_preview/start_model_server.sh stop
+bash policy/GO_3_Nano_preview/start_model_server.sh stop
 ```
 
-For foreground debugging, use `bash policy/GO-3_Nano_preview/start_model_server.sh foreground`. With the default configuration, the local health check URL is `http://127.0.0.1:18081/healthz`, and clients connect through `ws://<server-address>:18081`. `0.0.0.0` is the listening address; remote clients should use the actual server address.
+For foreground debugging, use `bash policy/GO_3_Nano_preview/start_model_server.sh foreground`. With the default configuration, the local health check URL is `http://127.0.0.1:18081/healthz`, and clients connect through `ws://<server-address>:18081`. `0.0.0.0` is the listening address; remote clients should use the actual server address.
 
 See [deploy.yml](configs/deploy.yml) for the inference configuration.
 
@@ -155,7 +155,7 @@ Set `XPL_ROOT` (the XPolicyLab root directory), `EVAL_ENV` (the simulation envir
 ```bash
 source "$ROBOTWIN_RUNTIME_CONFIG"
 export EVAL_ENV_TYPE=sim
-bash policy/GO-3_Nano_preview/eval.sh \
+bash policy/GO_3_Nano_preview/eval.sh \
   robotwin adjust_bottle "$CKPT_PATH" "$EVAL_ENV_CFG_TYPE" joint \
   42 0 1 "$POLICY_ENV" "$EVAL_ENV"
 ```
@@ -198,11 +198,11 @@ export SFT_VAL_DATA_ROOT="/path/to/validation_episodes"
 
 ### Launch Training on a Single Machine or Multiple Platform-Managed Nodes
 
-The current multi-GPU entry point is `policy/GO-3_Nano_preview/train_multi.sh`, using the following KA step configuration:
+The current multi-GPU entry point is `policy/GO_3_Nano_preview/train_multi.sh`, using the following KA step configuration:
 
 ```bash
-bash policy/GO-3_Nano_preview/train_multi.sh --env WAM_policy \
-  policy/GO-3_Nano_preview/configs/robotwin_sft_ka_step.py \
+bash policy/GO_3_Nano_preview/train_multi.sh --env WAM_policy \
+  policy/GO_3_Nano_preview/configs/robotwin_sft_ka_step.py \
   --mode train \
   --run_name cotrain_robotwin_sft_ka_robotype \
   --overwrite True --debug false --seed 1016
@@ -211,9 +211,9 @@ bash policy/GO-3_Nano_preview/train_multi.sh --env WAM_policy \
 The default configuration is already located in the policy directory, so you can also launch directly or only check the topology:
 
 ```bash
-bash policy/GO-3_Nano_preview/train_multi.sh
+bash policy/GO_3_Nano_preview/train_multi.sh
 # Only resolve the configuration path and GPU/node topology, without loading the model or starting training
-bash policy/GO-3_Nano_preview/train_multi.sh --dry-run
+bash policy/GO_3_Nano_preview/train_multi.sh --dry-run
 ```
 
 On a single machine, the script automatically detects the number of visible GPUs, so the GPU count does not need to be specified in the command. Set `CUDA_VISIBLE_DEVICES` to use only specific GPUs. Append `--dry-run` to the full `train_multi.sh` command to view only the resolved topology and launch command.
@@ -234,8 +234,8 @@ For example, with 8 nodes and 8 GPUs per node, totaling 64 GPUs, `WORLD_SIZE` at
 When checking the training pipeline for the first time, you can explicitly reduce the batch size and run one iteration:
 
 ```bash
-bash policy/GO-3_Nano_preview/train_multi.sh --env WAM_policy \
-  policy/GO-3_Nano_preview/configs/robotwin_sft_ka_step.py \
+bash policy/GO_3_Nano_preview/train_multi.sh --env WAM_policy \
+  policy/GO_3_Nano_preview/configs/robotwin_sft_ka_step.py \
   --mode train --run_name robotwin_smoke --seed 1016 \
   --steps 1 --batch-size 1 --workers 0 --skip-validation --skip-save
 ```
@@ -257,8 +257,8 @@ Outputs are written to `$RUN_ROOT/checkpoints/<run_name>` by default; use `SFT_O
 `--overwrite True` renames the existing output directory as a backup and starts over; it does not resume previous training. To resume, use a new output name and keep the same number of GPU processes as when the checkpoint was saved:
 
 ```bash
-bash policy/GO-3_Nano_preview/train_multi.sh --env WAM_policy \
-  policy/GO-3_Nano_preview/configs/robotwin_sft_ka_step.py \
+bash policy/GO_3_Nano_preview/train_multi.sh --env WAM_policy \
+  policy/GO_3_Nano_preview/configs/robotwin_sft_ka_step.py \
   --mode train --run_name robotwin_resumed --seed 1016 \
   --resume "/path/to/previous_run/training_state" --steps 10000
 ```
@@ -272,12 +272,12 @@ Existing validation includes regression tests, real-data reading, short training
 In an environment with the training dependencies installed, run the following from the XPolicyLab root directory:
 
 ```bash
-source policy/GO-3_Nano_preview/env.sh
+source policy/GO_3_Nano_preview/env.sh
 export PYTHONPATH="$(pwd)/..:$PYTHONPATH"
-"$POLICY_PYTHON" -B -m unittest discover -s policy/GO-3_Nano_preview/tests
-"$POLICY_PYTHON" policy/GO-3_Nano_preview/tools/privacy_scan.py
+"$POLICY_PYTHON" -B -m unittest discover -s policy/GO_3_Nano_preview/tests
+"$POLICY_PYTHON" policy/GO_3_Nano_preview/tools/privacy_scan.py
 ```
 
-The current 25 tests cover the model adapter, action format, captions, CPU decoding, training objectives, distributed sampling, and launch parsing after relocating the policy directory. The directory relocation tests copy only `policy/GO-3_Nano_preview/` and check the default configuration, command-line overrides, and a simulated 8×8 node topology from other working directories without starting actual training. By default, the privacy tool scans only the policy directory.
+The current 25 tests cover the model adapter, action format, captions, CPU decoding, training objectives, distributed sampling, and launch parsing after relocating the policy directory. The directory relocation tests copy only `policy/GO_3_Nano_preview/` and check the default configuration, command-line overrides, and a simulated 8×8 node topology from other working directories without starting actual training. By default, the privacy tool scans only the policy directory.
 
 See [TESTING.md](TESTING.md) for the regression tests from 2026-10-24, plain/encoded-image Debug logs with real weights, environment versions, weight hashes, and reproduction commands. This record covers interface and regression validation and does not include RoboTwin simulation success-rate results.

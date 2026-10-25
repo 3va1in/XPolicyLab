@@ -69,7 +69,7 @@ def main():
     parser.add_argument('config', nargs='?',
         default=str(Path(__file__).resolve().parents[2] / 'configs' / 'robotwin_sft_ka_step.py'),
         help='Training config; relative paths are resolved from the calling directory')
-    parser.add_argument('--env', choices=['GO-3_Nano_preview', 'go3_nano_preview', 'WAM_policy'], required=True)
+    parser.add_argument('--env', choices=['GO_3_Nano_preview', 'go3_nano_preview', 'WAM_policy'], required=True)
     parser.add_argument('--mode', choices=['train'], default='train')
     parser.add_argument('--run_name')
     parser.add_argument('--overwrite', type=boolean, default=False)
